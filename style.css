@@ -1,0 +1,208 @@
+/* FileManager Styles */
+.file-manager-container {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-basis: 250px; /* Fixed width for file explorer */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.fm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #eee;
+    border-bottom: 1px solid #ddd;
+}
+
+.fm-title {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.fm-action-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+.file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto; /* Scroll for long file lists */
+}
+
+.file-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.file-item:hover {
+    background-color: #f0f0f0;
+}
+
+.file-item.active {
+    background-color: #e0e0e0;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.file-icon {
+    font-size: 1.2em;
+}
+
+.fm-footer {
+    padding: 10px 15px;
+    background-color: #eee;
+    border-top: 1px solid #ddd;
+    font-size: 0.9em;
+    color: #555;
+}
+
+/* Preview Panel Styles */
+.preview-panel-container {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-grow: 1; /* Takes remaining space */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 500px; /* Ensure it has a minimum height */
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #eee;
+    border-bottom: 1px solid #ddd;
+}
+
+.preview-title {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.preview-btn {
+    background-color: #ddd;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+.preview-btn:hover {
+    background-color: #c0c0c0;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+
+.preview-content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center; /* Center content */
+    align-items: center; /* Center content */
+    position: relative; /* For welcome message positioning */
+    background-color: #f9f9f9;
+}
+
+.live-preview-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block; /* Remove extra space below iframe */
+    background-color: white; /* Default background for iframe */
+}
+
+.welcome-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2; /* Ensure it's above iframe initially */
+    max-width: 90%; /* Responsive width */
+}
+
+.welcome-message h2 {
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+/* Toast Notification Styles */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Ensure it's on top */
+    opacity: 0; /* Hidden by default */
+    visibility: hidden; /* Hidden by default */
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.toast-container.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.toast-message {
+    font-size: 1em;
+}
+
+/* Responsive adjustments for overall layout */
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column; /* Stack components vertically on small screens */
+    }
+
+    .file-manager-container,
+    .code-editor-container,
+    .preview-panel-container {
+        flex-basis: auto; /* Remove fixed basis for stacking */
+        width: 100%; /* Take full width */
+    }
+}
