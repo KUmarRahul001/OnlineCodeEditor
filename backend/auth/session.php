@@ -1,3 +1,3 @@
 <?php
 session_start();
-echo isset($_SESSION["user"]) ? "logged_in" : "not_logged_in";
+echo isset($_SESSION['email']) ? 'logged_in' : 'not_logged_in';
