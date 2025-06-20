@@ -5,133 +5,85 @@
   <meta charset="UTF-8" />
   <title>Online Code Editor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="script.js" defer></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: scale(0.95);
-      }
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="main.css" />
 
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    .animate-fadeIn {
-      animation: fadeIn 0.3s ease-out;
-    }
-  </style>
+  <!-- ACE Editor & ZIP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ext-language_tools.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+  <link rel="stylesheet" href="main.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ext-language_tools.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen text-sm sm:text-base">
+<body class="min-h-screen font-sans-dark">
 
-  <!-- NAVBAR -->
-  <nav class="bg-white dark:bg-gray-800 shadow p-4 flex flex-col sm:flex-row sm:justify-between items-center gap-4">
-    <h1 class="text-xl sm:text-2xl font-bold text-blue-700 dark:text-blue-300">🧑‍💻 Online Code Editor</h1>
-    <div class="flex flex-wrap justify-center sm:justify-end gap-2 w-full sm:w-auto">
-      <input type="text" id="projectName" placeholder="Project Name"
-        class="border px-3 py-2 rounded w-full sm:w-44" />
-      <button onclick="saveProject()" class="bg-green-600 text-white px-4 py-2 rounded">Save</button>
-      <button onclick="loadProjects()" class="bg-blue-600 text-white px-4 py-2 rounded">Load</button>
-      <button onclick="deleteProject()" class="bg-red-600 text-white px-4 py-2 rounded">Delete</button>
-      <button onclick="runCode()" class="bg-yellow-500 text-white px-4 py-2 rounded">Run</button>
-      <select id="projectList" onchange="loadSelectedProject()" class="border px-3 py-2 rounded w-full sm:w-44">
-        <option>-- Projects --</option>
-      </select>
-      <button id="themeToggle" class="bg-gray-800 text-white px-4 py-2 rounded">Toggle Theme</button>
-      <button onclick="openAuthModal('login')" class="bg-gray-600 text-white px-4 py-2 rounded">Login</button>
-      <button onclick="openAuthModal('register')" class="bg-gray-900 text-white px-4 py-2 rounded">Signup</button>
-    </div>
-  </nav>
+  <div class="big-wrapper">
+    <div class="max-w-screen-xl mx-auto px-4 py-6 flex flex-col gap-6">
 
-  <!-- AUTH MODAL -->
-  <div id="authModal"
-    class="fixed inset-0 hidden bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
-    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-6 rounded-lg w-full max-w-md shadow-lg animate-fadeIn relative">
-      <h2 id="authTitle" class="text-xl font-bold mb-4">Authentication</h2>
-      <input type="email" id="email" placeholder="Email" class="border w-full p-2 rounded mb-2" />
-      <input type="text" id="phone" placeholder="Phone (Signup only)" class="border w-full p-2 rounded mb-2" />
-      <input type="password" id="password" placeholder="Password" class="border w-full p-2 rounded mb-4" />
-      <div class="flex justify-between gap-2">
-        <button onclick="submitAuth()" class="bg-blue-600 text-white px-4 py-2 rounded w-full">Submit</button>
-        <button onclick="closeAuthModal()" class="bg-gray-400 text-white px-4 py-2 rounded w-full">Cancel</button>
+      <!-- Navbar -->
+      <nav>
+        <h1>🧑‍💻 Online Code Editor</h1>
+        <div class="toolbar">
+          <button onclick="runCode()" class="btn-primary">▶️ Run</button>
+          <button onclick="saveActiveProject()" class="btn-success">💾 Save</button>
+          <button onclick="loadActiveProject()" class="btn-secondary">🔄 Load</button>
+          <button onclick="clearAll()" class="btn-danger">🧹 Clear</button>
+          <button onclick="exportZip()" class="btn-info">📦 ZIP</button>
+          <button onclick="shareProject()" class="btn-neutral">🔗 Share</button>
+          <button onclick="togglePreviewFullscreen()">🖥️ Fullscreen</button>
+
+          <select id="projectList" onchange="selectProject(this.value)">
+            <option value="">-- Projects --</option>
+          </select>
+
+          <label class="theme-toggle">
+            <input type="checkbox" id="themeToggle" onchange="toggleTheme()" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </nav>
+
+      <!-- Section Title -->
+      <h2 class="section-title text-2xl font-bold mb-4">📝 Code Editors</h2>
+
+      <!-- Editors -->
+      <div class="editors-wrapper">
+        <div class="editor-column">
+          <div class="editor-title">HTML</div>
+          <div id="editor-html" class="editor-box"></div>
+        </div>
+        <div class="editor-column">
+          <div class="editor-title">CSS</div>
+          <div id="editor-css" class="editor-box"></div>
+        </div>
+        <div class="editor-column">
+          <div class="editor-title">JavaScript</div>
+          <div id="editor-js" class="editor-box"></div>
+        </div>
       </div>
-      <div id="authStatus" class="mt-2 text-sm text-center text-green-500"></div>
+
+      <!-- Output -->
+      <div class="output-container shadow rounded p-4">
+        <h2 class="text-lg font-semibold mb-3">🔎 Live Preview</h2>
+        <div class="preview-wrapper">
+          <iframe id="preview" class="code-preview"></iframe>
+        </div>
+
+        <h2 class="text-lg font-semibold mt-6 mb-3">🧾 Console Output</h2>
+        <pre id="consoleLog" class="code-console"></pre>
+      </div>
     </div>
   </div>
 
-  <!-- EDITORS -->
-  <main class="max-w-7xl mx-auto p-4 sm:p-6">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-      <div>
-        <label class="block font-semibold mb-2">HTML</label>
-        <textarea id="html" class="w-full h-52 sm:h-64 p-3 border border-gray-300 rounded resize-none"></textarea>
-      </div>
-      <div>
-        <label class="block font-semibold mb-2">CSS</label>
-        <textarea id="css" class="w-full h-52 sm:h-64 p-3 border border-gray-300 rounded resize-none"></textarea>
-      </div>
-      <div>
-        <label class="block font-semibold mb-2">JavaScript</label>
-        <textarea id="js" class="w-full h-52 sm:h-64 p-3 border border-gray-300 rounded resize-none"></textarea>
-      </div>
-    </div>
-
-    <!-- OUTPUT -->
-    <section class="mt-6 sm:mt-8">
-      <h2 class="text-lg sm:text-xl font-semibold mb-2">Output Preview</h2>
-      <div class="overflow-hidden rounded border border-gray-300 dark:border-gray-600">
-        <iframe id="preview" class="w-full h-[300px] sm:h-[400px] bg-white dark:bg-gray-800"></iframe>
-        <pre id="consoleLog"
-          class="bg-black text-green-400 text-xs p-2 h-24 overflow-y-auto dark:bg-gray-900"></pre>
-      </div>
-    </section>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="bg-white dark:bg-gray-800 shadow mt-8 p-4 text-center text-gray-600 dark:text-gray-300">
-    © 2025 Online Code Editor by IT Developer. All rights reserved.
-  </footer>
-
-  <!-- JS Auth Modal Script -->
-  <script>
-    let currentAuthMode = "login";
-
-    function openAuthModal(mode) {
-      currentAuthMode = mode;
-      document.getElementById("authTitle").textContent = mode === "login" ? "Login" : "Signup";
-      document.getElementById("phone").style.display = mode === "register" ? "block" : "none";
-      document.getElementById("authModal").classList.remove("hidden");
-    }
-
-    function closeAuthModal() {
-      document.getElementById("authModal").classList.add("hidden");
-      document.getElementById("authStatus").innerText = "";
-    }
-
-    function submitAuth() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-
-      const body = `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}` +
-        (currentAuthMode === "register" ? `&phone=${encodeURIComponent(phone)}` : "");
-
-      fetch(`backend/auth/${currentAuthMode}.php`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body
-      })
-        .then(res => res.text())
-        .then(msg => {
-          document.getElementById("authStatus").innerText = msg;
-          if (msg.toLowerCase().includes("success")) setTimeout(closeAuthModal, 1000);
-        });
-    }
-  </script>
+  <script type="module" src="script.js"></script>
 </body>
 
 </html>
