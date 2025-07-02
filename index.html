@@ -1,60 +1,248 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
   <meta charset="UTF-8" />
   <title>Online Code Editor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-  <link rel="stylesheet" href="main.css" />
 
-  <!-- ACE Editor & ZIP -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ext-language_tools.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+
+  <!-- Styles -->
   <link rel="stylesheet" href="main.css" />
+
+  <!-- ACE Editor & ZIP Dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ext-language_tools.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <style>
+    /* Base Styles */
+    .toolbar {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .toolbar.active {
+      display: flex;
+    }
+
+    .toolbar-buttons button,
+    .toolbar-options select,
+    .toolbar-options .theme-toggle {
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .hamburger {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    /* Mobile: <600px */
+    @media (max-width: 599px) {
+      .toolbar {
+        flex-direction: column;
+      }
+
+      .toolbar-buttons,
+      .toolbar-options {
+        width: 100%;
+      }
+
+      .toolbar-buttons button {
+        width: 100%;
+      }
+
+      nav h1 {
+        font-size: 1rem;
+        text-align: center;
+      }
+    }
+
+    /* Tablet: 600px–767px */
+    @media (min-width: 600px) and (max-width: 767px) {
+      .toolbar {
+        flex-direction: column;
+      }
+
+      .toolbar-buttons button,
+      .toolbar-options select {
+        font-size: 14px;
+      }
+
+      nav h1 {
+        font-size: 1.1rem;
+      }
+    }
+
+    /* Laptop: 768px–991px */
+    @media (min-width: 768px) and (max-width: 991px) {
+      .toolbar {
+        display: flex !important;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .hamburger {
+        display: none;
+      }
+
+      .toolbar-buttons button,
+      .toolbar-options select {
+        width: auto;
+      }
+
+      nav h1 {
+        font-size: 1.3rem;
+      }
+    }
+
+    /* Desktop: ≥992px */
+    @media (min-width: 992px) {
+      .toolbar {
+        display: flex !important;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .hamburger {
+        display: none;
+      }
+
+      .toolbar-buttons button,
+      .toolbar-options select {
+        width: auto;
+      }
+
+      nav h1 {
+        font-size: 1.4rem;
+      }
+    }
+
+    .code-console {
+      width: 100%;
+      height: 250px;
+      background: #111827;
+      color: #0f0;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      border-radius: 8px;
+      overflow-y: auto;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      box-sizing: border-box;
+      border: 1px solid #334155;
+      resize: vertical;
+    }
+
+    [data-theme="dark"] .code-console {
+      background: #0f172a;
+      color: #a0f0a0;
+    }
+
+    /* Responsive Tweaks */
+    @media (max-width: 768px) {
+      .code-console {
+        height: auto;
+        max-height: 200px;
+        font-size: 13px;
+      }
+    }
+
+    /* Base - Mobile First: Stack Editors Vertically */
+    .editors-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    /* Each Editor */
+    .editor-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 300px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      transition: background 0.3s ease;
+    }
+
+    [data-theme="dark"] .editor-column {
+      background: rgba(30, 41, 59, 0.8);
+    }
+
+    /* Desktop and Laptop View: Side by Side */
+    @media (min-width: 992px) {
+      .editors-wrapper {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
+      .editor-column {
+        width: calc(33.333% - 10.6px);
+        /* 3 columns with some spacing */
+      }
+    }
+  </style>
+
 </head>
 
-<body class="min-h-screen font-sans-dark">
-
+<body>
   <div class="big-wrapper">
-    <div class="max-w-screen-xl mx-auto px-4 py-6 flex flex-col gap-6">
+    <div class="container">
 
-      <!-- Navbar -->
-      <nav>
-        <h1>🧑‍💻 Online Code Editor</h1>
-        <div class="toolbar">
-          <button onclick="runCode()" class="btn-primary">▶️ Run</button>
-          <button onclick="saveActiveProject()" class="btn-success">💾 Save</button>
-          <button onclick="loadActiveProject()" class="btn-secondary">🔄 Load</button>
-          <button onclick="clearAll()" class="btn-danger">🧹 Clear</button>
-          <button onclick="exportZip()" class="btn-info">📦 ZIP</button>
-          <button onclick="shareProject()" class="btn-neutral">🔗 Share</button>
-          <button onclick="togglePreviewFullscreen()">🖥️ Fullscreen</button>
+      <nav class="navbar">
+        <div class="navbar-top">
+          <h1>🧑‍💻 Online Code Editor</h1>
+          <button class="hamburger" id="hamburgerToggle" onclick="toggleMenu()">☰</button>
+        </div>
 
-          <select id="projectList" onchange="selectProject(this.value)">
-            <option value="">-- Projects --</option>
-          </select>
-
-          <label class="theme-toggle">
-            <input type="checkbox" id="themeToggle" onchange="toggleTheme()" />
-            <span class="slider"></span>
-          </label>
+        <!-- Responsive Toolbar -->
+        <div class="toolbar" id="toolbar">
+          <div class="toolbar-buttons">
+            <button onclick="runCode()">▶️ Run</button>
+            <button onclick="saveActiveProject()">💾 Save</button>
+            <button onclick="loadActiveProject()">🔄 Load</button>
+            <button onclick="clearAll()">🧹 Clear</button>
+            <button onclick="exportZip()">📦 ZIP</button>
+            <button onclick="shareProject()">🔗 Share</button>
+            <button onclick="togglePreviewFullscreen()">🖥️ Fullscreen</button>
+          </div>
+          <div class="toolbar-options">
+            <select id="projectList" onchange="selectProject(this.value)">
+              <option value="">-- Projects --</option>
+            </select>
+            <label class="theme-toggle">
+              <input type="checkbox" id="themeToggle" onchange="toggleTheme()" />
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
       </nav>
 
-      <!-- Section Title -->
-      <h2 class="section-title text-2xl font-bold mb-4">📝 Code Editors</h2>
 
-      <!-- Editors -->
+      <!-- Code Editors Section -->
+      <h2 class="section-title">📝 Code Editors</h2>
       <div class="editors-wrapper">
         <div class="editor-column">
           <div class="editor-title">HTML</div>
@@ -70,20 +258,28 @@
         </div>
       </div>
 
-      <!-- Output -->
-      <div class="output-container shadow rounded p-4">
-        <h2 class="text-lg font-semibold mb-3">🔎 Live Preview</h2>
+      <!-- Output Section -->
+      <div class="output-container">
+        <h2 class="output-title">🔎 Live Preview</h2>
         <div class="preview-wrapper">
-          <iframe id="preview" class="code-preview"></iframe>
+          <iframe id="preview" class="code-preview" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
 
-        <h2 class="text-lg font-semibold mt-6 mb-3">🧾 Console Output</h2>
+        <h2 class="output-title">🧾 Console Output</h2>
         <pre id="consoleLog" class="code-console"></pre>
       </div>
+
     </div>
   </div>
 
+  <!-- Main Script -->
   <script type="module" src="script.js"></script>
+  <script>
+    function toggleMenu() {
+      const toolbar = document.getElementById('toolbar');
+      toolbar.classList.toggle('active');
+    }
+  </script>
 </body>
 
 </html>
